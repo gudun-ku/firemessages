@@ -31,8 +31,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         if(remoteMessage.notification != null) {
-            //TODO: Show notification
-            Log.d("FCM", "FCM Message Received")
+            //TODO: Show notification if we only not in chat
+            Log.d("FCM", remoteMessage.data.toString())
         }
     }
 
