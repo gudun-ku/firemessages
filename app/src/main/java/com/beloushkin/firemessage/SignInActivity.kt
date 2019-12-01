@@ -8,12 +8,18 @@ import com.beloushkin.firemessage.util.FirestoreUtil
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
+import com.google.firebase.iid.FirebaseInstanceId
 import kotlinx.android.synthetic.main.activity_sign_in.*
 import org.jetbrains.anko.clearTask
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.indeterminateProgressDialog
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.newTask
+import androidx.annotation.NonNull
+import com.beloushkin.firemessage.service.MyFirebaseMessagingService
+import com.google.android.gms.tasks.OnFailureListener
+
+
 
 class SignInActivity : AppCompatActivity() {
 
@@ -48,6 +54,11 @@ class SignInActivity : AppCompatActivity() {
                 //TODO: Initialize current user in Firestore
                 FirestoreUtil.initCurrentUserIfFirstTime {
                     startActivity(intentFor<MainActivity>().newTask().clearTask())
+
+                    lateinit var registrationToken:String
+                    FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener {
+                       MyFirebaseMessagingService.addTokenToFirestore(it.token)
+                    }
                     progressDialog.dismiss()
                 }
             } else if (resultCode == Activity.RESULT_CANCELED)  {

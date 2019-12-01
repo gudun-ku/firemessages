@@ -3,6 +3,7 @@ package com.beloushkin.firemessage.util
 import android.content.Context
 import android.util.Log
 import com.beloushkin.firemessage.model.*
+import com.beloushkin.firemessage.recyclerview.item.ImageMessageItem
 import com.beloushkin.firemessage.recyclerview.item.PersonItem
 import com.beloushkin.firemessage.recyclerview.item.TextMessageItem
 import com.google.firebase.auth.FirebaseAuth
@@ -25,7 +26,7 @@ object FirestoreUtil {
         currentUserDocRef.get().addOnSuccessListener { documentSnapshot ->
             if (!documentSnapshot.exists()) {
                 val newUser = User(FirebaseAuth.getInstance()
-                                .currentUser?.displayName ?: "", "", null)
+                                .currentUser?.displayName ?: "", "", null, mutableListOf())
                 currentUserDocRef.set(newUser).addOnSuccessListener {
                     onComplete()
                 }
@@ -111,7 +112,8 @@ object FirestoreUtil {
                     if(it["type"] == MessageType.TEXT)
                         items.add(TextMessageItem(it.toObject(TextMessage::class.java)!!, context))
                     else
-                        TODO("Add image message")
+                        items.add(ImageMessageItem(it.toObject(ImageMessage::class.java)!!, context))
+                    return@forEach
                 }
                 onListen(items)
             }
@@ -123,6 +125,19 @@ object FirestoreUtil {
             .add(message)
 
     }
+
+    //region FCM
+    fun getFCMRegistrationTokens(onComplete: (tokens: MutableList<String>) -> Unit) {
+        currentUserDocRef.get().addOnSuccessListener {
+            val user = it.toObject(User::class.java)!!
+            onComplete(user.registrationTokens)
+        }
+    }
+
+    fun setFCMRegistrationTokens(registrationTokens: MutableList<String>) {
+        currentUserDocRef.update(mapOf("registrationTokens" to registrationTokens))
+    }
+    //endregion FCM
 
 
 }
