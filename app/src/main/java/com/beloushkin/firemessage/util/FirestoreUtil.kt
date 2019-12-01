@@ -2,10 +2,7 @@ package com.beloushkin.firemessage.util
 
 import android.content.Context
 import android.util.Log
-import com.beloushkin.firemessage.model.ChatChannel
-import com.beloushkin.firemessage.model.MessageType
-import com.beloushkin.firemessage.model.TextMessage
-import com.beloushkin.firemessage.model.User
+import com.beloushkin.firemessage.model.*
 import com.beloushkin.firemessage.recyclerview.item.PersonItem
 import com.beloushkin.firemessage.recyclerview.item.TextMessageItem
 import com.google.firebase.auth.FirebaseAuth
@@ -119,4 +116,13 @@ object FirestoreUtil {
                 onListen(items)
             }
     }
+
+    fun sendMessage(message: Message, channelId: String) {
+        chatChannerlsCollectionRef.document(channelId)
+            .collection("messages")
+            .add(message)
+
+    }
+
+
 }
